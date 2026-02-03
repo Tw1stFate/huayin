@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>尊享印刷报价系统 - 品质至上</title>
+  <script src="./印刷报价系统_files/jquery-3.6.0.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --gold: #d4af37;
+      --gold-light: #f4e4a6;
+      --gold-dark: #b8960c;
+      --black: #0a0a0a;
+      --black-light: #1a1a1a;
+      --black-card: #141414;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* 金色光效背景 */
+    body::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      right: -50%;
+      bottom: -50%;
+      background:
+        radial-gradient(ellipse at 20% 20%, rgba(212, 175, 55, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
+      pointer-events: none;
+      animation: shimmer 8s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.05); }
+    }
+
+    /* 金色粒子效果 */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image:
+        radial-gradient(2px 2px at 20px 30px, rgba(212, 175, 55, 0.4), transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(244, 228, 166, 0.3), transparent),
+        radial-gradient(1px 1px at 90px 40px, rgba(212, 175, 55, 0.5), transparent),
+        radial-gradient(2px 2px at 130px 80px, rgba(212, 175, 55, 0.3), transparent),
+        radial-gradient(1px 1px at 160px 30px, rgba(244, 228, 166, 0.4), transparent);
+      background-size: 200px 100px;
+      animation: sparkle 4s linear infinite;
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    @keyframes sparkle {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-100px); }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 50px;
+      animation: fadeInDown 0.8s ease;
+    }
+
+    /* 皇冠图标 */
+    .header::before {
+      content: '👑';
+      display: block;
+      font-size: 3.5rem;
+      margin-bottom: 15px;
+      filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.8));
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .header h1 {
+      font-size: 3.2rem;
+      background: linear-gradient(135deg, #f4e4a6 0%, #d4af37 25%, #f4e4a6 50%, #d4af37 75%, #f4e4a6 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 800;
+      margin-bottom: 15px;
+      text-shadow: 0 0 40px rgba(212, 175, 55, 0.5);
+      letter-spacing: 8px;
+      animation: goldShine 3s linear infinite;
+    }
+
+    @keyframes goldShine {
+      0% { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
+
+    .header p {
+      font-size: 1.2rem;
+      color: var(--gold);
+      font-weight: 400;
+      letter-spacing: 12px;
+      text-transform: uppercase;
+      opacity: 0.9;
+    }
+
+    .main-card {
+      background: linear-gradient(145deg, #1a1a1a 0%, #141414 100%);
+      border-radius: 30px;
+      padding: 50px;
+      box-shadow:
+        0 30px 90px rgba(0,0,0,0.8),
+        inset 0 1px 0 rgba(212, 175, 55, 0.2),
+        0 0 60px rgba(212, 175, 55, 0.1);
+      animation: fadeInUp 0.8s ease;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 卡片角落装饰 */
+    .main-card::before,
+    .main-card::after {
+      content: '';
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      border: 2px solid var(--gold);
+      opacity: 0.3;
+    }
+
+    .main-card::before {
+      top: 20px;
+      left: 20px;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    .main-card::after {
+      bottom: 20px;
+      right: 20px;
+      border-left: none;
+      border-top: none;
+    }
+
+    .section {
+      margin-bottom: 35px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-title {
+      font-size: 1.3rem;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+    }
+
+    .section-title::before {
+      content: '◆';
+      color: var(--gold);
+      font-size: 0.8rem;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.9); }
+    }
+
+    .input-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-wrapper label {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--gold-light);
+      margin-bottom: 8px;
+      font-weight: 500;
+      letter-spacing: 1px;
+    }
+
+    .input-wrapper input,
+    .input-wrapper select {
+      width: 100%;
+      padding: 14px 18px;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      outline: none;
+    }
+
+    .input-wrapper input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .input-wrapper input:focus,
+    .input-wrapper select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    }
+
+    .input-wrapper.with-unit::after {
+      content: 'mm';
+      position: absolute;
+      right: 18px;
+      top: 42px;
+      color: var(--gold);
+      font-size: 0.9rem;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .radio-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 12px 24px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      background: rgba(212, 175, 55, 0.1);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .radio-item:hover {
+      background: rgba(212, 175, 55, 0.2);
+      border-color: var(--gold);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(212, 175, 55, 0.2);
+    }
+
+    .radio-item input[type="radio"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: var(--gold);
+    }
+
+    .radio-item label {
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: var(--gold-light);
+      margin: 0;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 15px 20px;
+      background: rgba(212, 175, 55, 0.08);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .checkbox-item:hover {
+      background: rgba(212, 175, 55, 0.15);
+      border-color: var(--gold);
+      transform: translateX(5px);
+      box-shadow: 0 5px 20px rgba(212, 175, 55, 0.15);
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      cursor: pointer;
+      accent-color: var(--gold);
+    }
+
+    .checkbox-item label {
+      cursor: pointer;
+      font-size: 1rem;
+      color: var(--gold-light);
+      margin: 0;
+      flex: 1;
+    }
+
+    .checkbox-item input[type="text"] {
+      width: 120px;
+      padding: 8px 12px;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+    }
+
+    .checkbox-item input[type="text"]:focus {
+      border-color: var(--gold);
+      outline: none;
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+    }
+
+    .hotgold-inputs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 15px;
+      padding-left: 34px;
+    }
+
+    .hotgold-inputs input {
+      padding: 10px 14px;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+    }
+
+    .hotgold-inputs input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .hotgold-inputs input:focus {
+      border-color: var(--gold);
+      outline: none;
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+    }
+
+    .price-section {
+      margin-top: 40px;
+      padding: 40px;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(184, 150, 12, 0.15) 50%, rgba(212, 175, 55, 0.2) 100%);
+      border-radius: 20px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 30px;
+      box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.5),
+        inset 0 0 60px rgba(212, 175, 55, 0.1);
+      border: 2px solid var(--gold);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .price-section::before {
+      content: '💰';
+      position: absolute;
+      font-size: 8rem;
+      opacity: 0.1;
+      left: -20px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .price-section::after {
+      content: '💰';
+      position: absolute;
+      font-size: 8rem;
+      opacity: 0.1;
+      right: -20px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .price-item {
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .price-label {
+      font-size: 1.1rem;
+      color: var(--gold-light);
+      margin-bottom: 10px;
+      font-weight: 400;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .price-value {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #f4e4a6 0%, #d4af37 50%, #f4e4a6 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+      animation: goldShine 3s linear infinite;
+    }
+
+    .note-section {
+      margin-top: 40px;
+      padding: 30px;
+      background: rgba(212, 175, 55, 0.1);
+      border-left: 4px solid var(--gold);
+      border-radius: 15px;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .note-title {
+      font-size: 1.2rem;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .note-title::before {
+      content: '📜';
+      font-size: 1.5rem;
+    }
+
+    .note-content p {
+      color: var(--gold-light);
+      line-height: 1.8;
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+      opacity: 0.85;
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2rem;
+        letter-spacing: 4px;
+      }
+
+      .header p {
+        letter-spacing: 6px;
+        font-size: 1rem;
+      }
+
+      .main-card {
+        padding: 30px 20px;
+        border-radius: 20px;
+      }
+
+      .main-card::before,
+      .main-card::after {
+        width: 50px;
+        height: 50px;
+      }
+
+      .input-group {
+        grid-template-columns: 1fr;
+      }
+
+      .hotgold-inputs {
+        grid-template-columns: 1fr;
+        padding-left: 0;
+      }
+
+      .price-section {
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .price-value {
+        font-size: 2.2rem;
+      }
+    }
+
+    /* 美化滚动条 */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--black);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
+      border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--gold-light);
+    }
+
+    /* 选择框美化 */
+    select {
+      appearance: none;
+      background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path fill="%23d4af37" d="M6 9L1 4h10z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 15px center;
+      padding-right: 40px;
+      cursor: pointer;
+    }
+
+    select option {
+      background: #1a1a1a;
+      color: #fff;
+    }
+
+    /* 加载动画 */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(212, 175, 55, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--gold);
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>尊享印刷报价系统</h1>
+      <p>品质至上 · 匠心独运 · 财源广进</p>
+    </div>
+
+    <div class="main-card">
+      <form id="forma" name="forma">
+        <!-- 基本尺寸 -->
+        <div class="section">
+          <div class="section-title">基本信息</div>
+          <div class="input-group">
+            <div class="input-wrapper with-unit">
+              <label>长度</label>
+              <input type="text" placeholder="请输入长度" id="mwidth" name="mwidth" onkeyup="value=value.replace(/[^\d.]/g,'')" pattern="\d*">
+            </div>
+            <div class="input-wrapper with-unit">
+              <label>宽度</label>
+              <input type="text" placeholder="请输入宽度" id="mheight" name="mheight" onkeyup="value=value.replace(/[^\d.]/g,'')" pattern="\d*">
+            </div>
+            <div class="input-wrapper">
+              <label>数量</label>
+              <input type="text" placeholder="请输入数量" id="msize" name="msize" onkeyup="value=value.replace(/[^\d]/g,'')" pattern="\d*">
+            </div>
+          </div>
+        </div>
+
+        <!-- 材料选择 -->
+        <div class="section">
+          <div class="section-title">材料选择</div>
+          <div class="input-wrapper">
+            <select name="Material" id="Material">
+              <option value="0">纯加工</option>
+              <option value="9999">———— 铜版系列 ————</option>
+              <option value="2.2">黄底龙标*0220</option>
+              <option value="2.2">格底龙标*0220</option>
+              <option value="1.8">黄底特光热熔胶（普通）*0180</option>
+              <option value="1.6">格底铜版热熔胶（普通）*0160</option>
+              <option value="2.3">格底艾力铜版4200（水胶）*0230</option>
+              <option value="2.3">格底艾力铜版5200（热熔胶）*0230</option>
+              <option value="2.1">白底铜版（耐低温）*0210</option>
+              <option value="4.1">铜版（电线胶）*0410</option>
+              <option value="2.7">黄底100铜版*0270</option>
+              <option value="3.3">格底100铜版*0330</option>
+              <option value="5">铜版（轮胎胶）*0500</option>
+              <option value="2.6">铜版油胶*0260</option>
+              <option value="2.95">格底铜版（可移胶）*0295</option>
+              <option value="2.6">120克铜版*0260</option>
+              <option value="2.9">160克铜版*0290</option>
+              <option value="9999">———— 合成系列 ————</option>
+              <option value="1.9">格底54#合成纸（水胶加胶）*0190</option>
+              <option value="2.6">格底54#合成纸（油胶）*0260</option>
+              <option value="3.4">格底54#合成纸（可移胶）*0340</option>
+              <option value="4.1">格底54#合成纸（电线胶）*0410</option>
+              <option value="2.2">格底75G#合成纸 *0220</option>
+              <option value="3.8">白底54#合成纸（可移胶）*0380</option>
+              <option value="4.7">白底54#合成纸（电线胶）*0470</option>
+              <option value="2.6">白底54#合成纸（耐低温）*0260</option>
+              <option value="3">白底54#合成纸*0300</option>
+              <option value="3.4">格底75#合成纸（油胶）*0340</option>
+              <option value="2.27">格底75#合成纸*0227</option>
+              <option value="3.6">格底75#合成纸（可移胶）*0360</option>
+              <option value="3.6">白底75#合成纸（可移胶）*0360</option>
+              <option value="3.1">白底75#合成纸*0310</option>
+              <option value="7">白底合成轮胎胶*0700</option>
+              <option value="3.2">160克白底合成*0320</option>
+              <option value="9999">———— 光银/素面系列 ————</option>
+              <option value="3.3">格底50#光银BOPP（油胶）*0330</option>
+              <option value="2.3">格底50#光银BOPP*0230</option>
+              <option value="3.5">白底50#光银BOPP*0350</option>
+              <option value="6.5">白底100#光银BOPP*0650</option>
+              <option value="2.6">格底50#素面镭射BOPP*0260</option>
+              <option value="3.9">白底50#素面镭射PVC*0390</option>
+              <option value="9999">———— 透明系列 ————</option>
+              <option value="2.5">格底25#透明（有涂层）*0250</option>
+              <option value="3.4">白底5C透明（有涂层）*0340</option>
+              <option value="3.6">格底5C可移（透明）*0360</option>
+              <option value="2.9">30克双透明（水胶）*0290</option>
+              <option value="3.3">格底50#透明BOPP（油胶）*0330</option>
+              <option value="2.1">格底50#透明BOPP*0210</option>
+              <option value="7">格底乳白软管PE*0700</option>
+              <option value="3.2">格底艾利50#透明PE*0320</option>
+              <option value="4.5">白底100#透明*0450</option>
+              <option value="5.3">格底100#透明（不涂层）*0530</option>
+              <option value="4.2">5C透明间隔胶*0420</option>
+              <option value="9999">———— 乳白PE系列 ————</option>
+              <option value="2.5">格底80#乳白PE*0250</option>
+              <option value="5">格底乳白软管PE*0500</option>
+              <option value="9999">———— 哑银系列 ————</option>
+              <option value="2.2">黄底25#哑银（没涂层）*0220</option>
+              <option value="2.85">黄底50#哑银（没涂层）*0285</option>
+              <option value="3.5">格底50#哑银膜（有涂层）*0350</option>
+              <option value="4.9">格底50#哑银膜（可移）*0490</option>
+              <option value="3">格底25#哑银PET（涂层）*0300</option>
+              <option value="3.6">格底哑银纸*0360</option>
+              <option value="9999">———— 珠光系列 ————</option>
+              <option value="2.2">格底珠光膜*0220</option>
+              <option value="3.3">格底可移珠光（包料）*0330</option>
+              <option value="2.8">珠光膜油胶*0280</option>
+              <option value="2.8">格底珠光油胶*0280</option>
+              <option value="2.2">珠光膜水胶*0220</option>
+              <option value="9999">———— 光白系列 ————</option>
+              <option value="3.6">格底80#光白PVC（涂层）*0360</option>
+              <option value="4.8">格底50#光白PET（有涂层）*0480</option>
+              <option value="9999">———— 牛皮系列 ————</option>
+              <option value="2.2">格底牛皮纸*0220</option>
+              <option value="2.3">黄底牛皮纸*0230</option>
+              <option value="1.8">格底书写*0180</option>
+              <option value="3.2">白底可移书写*0320</option>
+              <option value="2.8">龙标牛皮纸*0280</option>
+              <option value="9999">———— 特性材料系列 ————</option>
+              <option value="4.4">白底金色小方格镭射*0440</option>
+              <option value="3.5">格底50#拉丝银（有涂层）*0350</option>
+              <option value="3.85">格底50#拉丝金（有涂层）*0385</option>
+              <option value="3.8">白底50#拉丝银*0380</option>
+              <option value="4.3">62克格底哑金纸*0430</option>
+              <option value="8.8">白底易碎纸（中碎）*0880</option>
+              <option value="2.3">热敏纸三防*0230</option>
+              <option value="3.9">静电膜*0390</option>
+              <option value="5.2">15C静电膜*0520</option>
+              <option value="1">128克西卡*0100</option>
+              <option value="1.25">157克西卡*0125</option>
+              <option value="2.1">250克西卡*0210</option>
+              <option value="2.4">300克西卡*0240</option>
+              <option value="2">艾利AW4200P/水胶*0200</option>
+              <option value="1.95">艾利AW5200P/热熔胶*1950</option>
+              <option value="3.3">艾利AW3209/水胶*0330</option>
+              <option value="3.05">艾利5209/水胶*0305</option>
+              <option value="3">艾利/BWS1251*0300</option>
+              <option value="3.05">艾利/BWS2688*0305</option>
+              <option value="3">艾利/BW9350*0300</option>
+              <option value="4.2">美纹纸*0420</option>
+              <option value="3.1">艾利 AW 5029*0310</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 覆膜选择 -->
+        <div class="section">
+          <div class="section-title">覆膜工艺</div>
+          <div class="radio-group">
+            <div class="radio-item">
+              <input type="radio" value="0.8" name="YsTyp" id="ys1" checked>
+              <label for="ys1">光膜</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" value="1" name="YsTyp" id="ys2">
+              <label for="ys2">亚胶</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" value="0" name="YsTyp" id="ys3">
+              <label for="ys3">不覆膜</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 附加工艺 -->
+        <div class="section">
+          <div class="section-title">附加工艺</div>
+          <div class="checkbox-group">
+            <div class="checkbox-item">
+              <input type="checkbox" value="1.5" name="TjData" id="TjData">
+              <label for="TjData">烫金</label>
+            </div>
+            <div class="hotgold-inputs tj" style="display: none;">
+              <input type="text" placeholder="长(mm)" onkeyup="value=value.replace(/[^\d.]/g,'')" id="twidth" name="twidth" pattern="\d*">
+              <input type="text" placeholder="宽(mm)" onkeyup="value=value.replace(/[^\d.]/g,'')" id="theight" name="theight" pattern="\d*">
+              <input type="text" placeholder="数量" onkeyup="value=value.replace(/[^\d]/g,'')" id="tsize" name="tsize" pattern="\d*">
+            </div>
+
+            <div class="checkbox-item">
+              <input type="checkbox" value="0.5" name="ZsData" id="ZsData">
+              <label for="ZsData">白墨</label>
+            </div>
+
+            <div class="checkbox-item">
+              <input type="checkbox" value="0.5" name="KsData" id="KsData">
+              <label for="KsData">专色</label>
+              <input type="text" placeholder="数量" onkeyup="value=value.replace(/[^\d]/g,'')" pattern="\d*" id="Kssize" name="Kssize" style="display: none;">
+            </div>
+
+            <div class="checkbox-item">
+              <input type="checkbox" value="0.5" name="JbData" id="JbData">
+              <label for="JbData">卷标费</label>
+              <input type="text" placeholder="数量" onkeyup="value=value.replace(/[^\d]/g,'')" pattern="\d*" id="Jbsize" name="Jbsize" style="display: none;">
+            </div>
+
+            <div class="checkbox-item">
+              <input type="checkbox" value="1" name="CkData">
+              <label>过油</label>
+            </div>
+
+            <div class="checkbox-item">
+              <input type="checkbox" value="1" name="CkData">
+              <label>磨砂</label>
+            </div>
+          </div>
+        </div>
+
+        <input type="radio" value="1.4" name="Printing" id="Printing" checked style="display: none;">
+      </form>
+
+      <!-- 价格显示 -->
+      <div class="price-section">
+        <div class="price-item">
+          <div class="price-label">总价</div>
+          <div class="price-value" id="Tprice">￥0</div>
+        </div>
+        <div class="price-item">
+          <div class="price-label">单价</div>
+          <div class="price-value" id="Dprice">￥0.000</div>
+        </div>
+      </div>
+
+      <!-- 备注说明 -->
+      <div class="note-section">
+        <div class="note-title">重要提示</div>
+        <div class="note-content">
+          <p>1、因各类彩贴使用材料不同，请合理选择材料胶性。如因客户材料选择不对出现翘标问题本公司概不负责。</p>
+          <p>2、本公司系统报价只限于35*30cm尺寸以内为准，超大尺寸不受理订单。</p>
+          <p>3、客户不跟色的前提下，印刷色差10%属于正常范围，不接受客户退货。</p>
+          <p>4、模切与烫金边宽误差0.005以内是属于正常范围，不接受客户退货。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./印刷报价系统_files/system.js"></script>
+  <script>
+    $(document).ready(function(){
+      $(".hotgold-inputs.tj").hide();
+      $("#TjData").click(function(){
+        $(".hotgold-inputs.tj").toggle(300);
+      });
+    });
+    $(document).ready(function(){
+      $("#Kssize").hide();
+      $("#KsData").click(function(){
+        $("#Kssize").toggle(300);
+      });
+    });
+    $(document).ready(function(){
+      $("#Jbsize").hide();
+      $("#JbData").click(function(){
+        $("#Jbsize").toggle(300);
+      });
+    });
+  </script>
+</body>
+</html>
