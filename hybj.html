@@ -23,7 +23,12 @@
 
     html, body {
       max-width: 100%;
+      height: 100%;
       overflow-x: hidden;
+    }
+
+    html {
+      overflow-y: hidden;
     }
 
     body {
@@ -33,6 +38,8 @@
       padding: 40px 20px;
       position: relative;
       overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     /* 金色光效背景 */
@@ -48,7 +55,7 @@
         radial-gradient(ellipse at 80% 80%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
         radial-gradient(ellipse at 50% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
       pointer-events: none;
-      animation: shimmer 8s ease-in-out infinite;
+      animation: shimmer 10s ease-in-out infinite;
     }
 
     @keyframes shimmer {
@@ -71,7 +78,7 @@
         radial-gradient(2px 2px at 130px 80px, rgba(212, 175, 55, 0.3), transparent),
         radial-gradient(1px 1px at 160px 30px, rgba(244, 228, 166, 0.4), transparent);
       background-size: 200px 100px;
-      animation: sparkle 4s linear infinite;
+      animation: sparkle 8s linear infinite;
       pointer-events: none;
       opacity: 0.6;
     }
@@ -92,7 +99,7 @@
     .header {
       text-align: center;
       margin-bottom: 50px;
-      animation: fadeInDown 0.8s ease;
+      animation: fadeInDown 0.6s ease;
     }
 
     /* 皇冠图标 */
@@ -102,7 +109,7 @@
       font-size: 3.5rem;
       margin-bottom: 15px;
       filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.8));
-      animation: float 3s ease-in-out infinite;
+      animation: float 4s ease-in-out infinite;
     }
 
     @keyframes float {
@@ -121,7 +128,7 @@
       margin-bottom: 15px;
       text-shadow: 0 0 40px rgba(212, 175, 55, 0.5);
       letter-spacing: 8px;
-      animation: goldShine 3s linear infinite;
+      animation: goldShine 4s linear infinite;
     }
 
     @keyframes goldShine {
@@ -147,7 +154,7 @@
         0 30px 90px rgba(0,0,0,0.8),
         inset 0 1px 0 rgba(212, 175, 55, 0.2),
         0 0 60px rgba(212, 175, 55, 0.1);
-      animation: fadeInUp 0.8s ease;
+      animation: fadeInUp 0.6s ease;
       border: 1px solid rgba(212, 175, 55, 0.3);
       position: relative;
       overflow: hidden;
@@ -199,7 +206,7 @@
       content: '◆';
       color: var(--gold);
       font-size: 0.8rem;
-      animation: pulse 2s ease-in-out infinite;
+      animation: pulse 2.4s ease-in-out infinite;
     }
 
     @keyframes pulse {
@@ -347,7 +354,7 @@
       border: 1px solid rgba(212, 175, 55, 0.3);
       border-radius: 8px;
       font-size: 16px;
-      transition: all 0.3s ease;
+      transition: none;
       background: rgba(0, 0, 0, 0.5);
       color: #fff;
     }
@@ -464,7 +471,7 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
       text-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
-      animation: goldShine 3s linear infinite;
+      animation: goldShine 4s linear infinite;
     }
 
     .note-section {
@@ -590,6 +597,28 @@
 
       .note-content p {
         font-size: 0.85rem;
+      }
+
+      body::before {
+        animation-duration: 16s;
+      }
+
+      body::after {
+        animation-duration: 14s;
+        opacity: 0.45;
+      }
+
+      .header::before {
+        animation-duration: 6s;
+      }
+
+      .header h1,
+      .price-value {
+        animation-duration: 6s;
+      }
+
+      .section-title::before {
+        animation-duration: 3s;
       }
     }
 
@@ -881,13 +910,13 @@
     $(document).ready(function(){
       $("#Kssize").hide();
       $("#KsData").click(function(){
-        $("#Kssize").toggle(300);
+        $("#Kssize").toggle();
       });
     });
     $(document).ready(function(){
       $("#Jbsize").hide();
       $("#JbData").click(function(){
-        $("#Jbsize").toggle(300);
+        $("#Jbsize").toggle();
       });
     });
   </script>
