@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>华印报价 - 品质至上</title>
   <script src="./印刷报价系统_files/jquery-3.6.0.min.js"></script>
   <style>
@@ -226,7 +226,7 @@
       padding: 14px 18px;
       border: 1px solid rgba(212, 175, 55, 0.3);
       border-radius: 12px;
-      font-size: 1rem;
+      font-size: 16px;
       transition: all 0.3s ease;
       background: rgba(0, 0, 0, 0.5);
       color: #fff;
@@ -308,12 +308,12 @@
       border: 1px solid rgba(212, 175, 55, 0.2);
       border-radius: 12px;
       transition: all 0.3s ease;
+      min-height: 56px;
     }
 
     .checkbox-item:hover {
       background: rgba(212, 175, 55, 0.15);
       border-color: var(--gold);
-      transform: translateX(5px);
       box-shadow: 0 5px 20px rgba(212, 175, 55, 0.15);
     }
 
@@ -329,18 +329,35 @@
       font-size: 1rem;
       color: var(--gold-light);
       margin: 0;
-      flex: 1;
+      flex: 0 0 auto;
     }
 
     .checkbox-item input[type="text"] {
-      width: 120px;
-      padding: 8px 12px;
+      width: 220px;
+      min-width: 160px;
+      padding: 10px 14px;
       border: 1px solid rgba(212, 175, 55, 0.3);
       border-radius: 8px;
-      font-size: 0.9rem;
+      font-size: 16px;
       transition: all 0.3s ease;
       background: rgba(0, 0, 0, 0.5);
       color: #fff;
+    }
+
+    .checkbox-item.has-input {
+      display: grid;
+      grid-template-columns: 24px 120px minmax(160px, 240px);
+      align-items: center;
+      column-gap: 18px;
+    }
+
+    .checkbox-item.has-input input[type="text"] {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .checkbox-item input[type="text"]::placeholder {
+      color: rgba(255, 255, 255, 0.4);
     }
 
     .checkbox-item input[type="text"]:focus {
@@ -361,7 +378,7 @@
       padding: 10px 14px;
       border: 1px solid rgba(212, 175, 55, 0.3);
       border-radius: 8px;
-      font-size: 0.9rem;
+      font-size: 16px;
       transition: all 0.3s ease;
       background: rgba(0, 0, 0, 0.5);
       color: #fff;
@@ -446,9 +463,9 @@
       margin-top: 40px;
       padding: 30px;
       background: rgba(212, 175, 55, 0.1);
+      border: 1px solid rgba(212, 175, 55, 0.3);
       border-left: 4px solid var(--gold);
       border-radius: 15px;
-      border: 1px solid rgba(212, 175, 55, 0.3);
     }
 
     .note-title {
@@ -497,25 +514,33 @@
     }
 
     @media (max-width: 768px) {
+      body {
+        padding: 20px 15px;
+      }
+
       .header h1 {
-        font-size: 2rem;
+        font-size: 1.8rem;
         letter-spacing: 4px;
       }
 
       .header p {
-        letter-spacing: 6px;
-        font-size: 1rem;
+        letter-spacing: 4px;
+        font-size: 0.9rem;
+      }
+
+      .header::before {
+        font-size: 2.5rem;
       }
 
       .main-card {
-        padding: 30px 20px;
+        padding: 25px 15px;
         border-radius: 20px;
       }
 
       .main-card::before,
       .main-card::after {
-        width: 50px;
-        height: 50px;
+        width: 40px;
+        height: 40px;
       }
 
       .input-group {
@@ -527,13 +552,36 @@
         padding-left: 0;
       }
 
+      .checkbox-item {
+        flex-wrap: wrap;
+      }
+
+      .checkbox-item input[type="text"] {
+        width: 100%;
+        margin-top: 8px;
+      }
+
+      .checkbox-item.has-input {
+        grid-template-columns: 24px 100px 1fr;
+      }
+
+      .checkbox-item.has-input input[type="text"] {
+        margin-top: 0;
+        align-self: center;
+      }
+
       .price-section {
         flex-direction: column;
         gap: 20px;
+        padding: 30px 20px;
       }
 
       .price-value {
-        font-size: 2.2rem;
+        font-size: 2rem;
+      }
+
+      .note-content p {
+        font-size: 0.85rem;
       }
     }
 
@@ -762,26 +810,26 @@
               <label for="ZsData">白墨</label>
             </div>
 
-            <div class="checkbox-item">
+            <div class="checkbox-item has-input">
               <input type="checkbox" value="0.5" name="KsData" id="KsData">
               <label for="KsData">专色</label>
               <input type="text" placeholder="数量" onkeyup="value=value.replace(/[^\d]/g,'')" pattern="\d*" id="Kssize" name="Kssize" style="display: none;">
             </div>
 
-            <div class="checkbox-item">
+            <div class="checkbox-item has-input">
               <input type="checkbox" value="0.5" name="JbData" id="JbData">
               <label for="JbData">卷标费</label>
               <input type="text" placeholder="数量" onkeyup="value=value.replace(/[^\d]/g,'')" pattern="\d*" id="Jbsize" name="Jbsize" style="display: none;">
             </div>
 
             <div class="checkbox-item">
-              <input type="checkbox" value="1" name="CkData">
-              <label>过油</label>
+              <input type="checkbox" value="1" name="CkData" id="GyData">
+              <label for="GyData">过油</label>
             </div>
 
             <div class="checkbox-item">
-              <input type="checkbox" value="1" name="CkData">
-              <label>磨砂</label>
+              <input type="checkbox" value="1" name="CkData" id="MsData">
+              <label for="MsData">磨砂</label>
             </div>
           </div>
         </div>
