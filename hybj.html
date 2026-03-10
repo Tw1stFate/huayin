@@ -53,6 +53,33 @@
       }
     };
   </script>
+  <style>
+    .tag-btn { cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: all .15s; }
+    .tag-btn:hover { border-color: rgba(212,175,55,.5); color: #f4e4a6; }
+    .tag-btn.active { background: rgba(212,175,55,.25); border-color: #d4af37; color: #f4e4a6; box-shadow: 0 0 8px rgba(212,175,55,.25); font-weight: 500; }
+    .tag-btn.tag-toggle { border-color: rgba(212,175,55,.45); color: #d4af37; background: transparent; }
+    .tag-btn.tag-toggle:hover { border-color: rgba(212,175,55,.7); color: #f4e4a6; background: rgba(212,175,55,.1); }
+    .sel-wrap { position: relative; }
+    .sel-list { position: absolute; left: 0; right: 0; top: calc(100% + 4px); max-height: 260px; overflow-y: auto; background: #1a1a1a; border: 1px solid rgba(212,175,55,.3); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.5); z-index: 50; display: none; }
+    .sel-list.open { display: block; }
+    .sel-item { padding: 9px 16px; font-size: 14px; color: rgba(244,228,166,.8); cursor: pointer; transition: background .1s; }
+    .sel-item:hover { background: rgba(212,175,55,.1); }
+    .sel-item.on { color: #d4af37; font-weight: 500; }
+    .sel-item.hd { color: rgba(212,175,55,.5); font-size: 12px; font-weight: 600; background: rgba(212,175,55,.05); cursor: default; padding: 6px 16px; }
+    .sel-item.hd:hover { background: rgba(212,175,55,.05); }
+    .sel-item.hide { display: none; }
+    .sel-list::-webkit-scrollbar { width: 5px; }
+    .sel-list::-webkit-scrollbar-track { background: transparent; }
+    .sel-list::-webkit-scrollbar-thumb { background: rgba(212,175,55,.3); border-radius: 3px; }
+    .form-row { display: grid; grid-template-columns: 70px 1fr; gap: 0 16px; align-items: center; padding: 14px 0; border-bottom: 1px solid rgba(212,175,55,0.1); }
+    .form-row:last-of-type { border-bottom: none; }
+    .form-row.row-top { align-items: start; }
+    .row-label { color: #d4af37; font-size: 14px; font-weight: 600; white-space: nowrap; }
+    @media (max-width: 640px) {
+      .form-row { grid-template-columns: 1fr; gap: 6px 0; }
+      .row-label { padding-top: 0; }
+    }
+  </style>
 </head>
 <body class="min-h-screen bg-[#0b0b0b] text-[#f6f1dd] overflow-x-hidden">
   <div class="pointer-events-none fixed inset-0 -z-10">
@@ -68,35 +95,30 @@
     </header>
 
     <main class="rounded-3xl border border-gold/30 bg-gradient-to-b from-[#1a1a1a] to-[#121212] p-6 sm:p-10 shadow-[0_30px_90px_rgba(0,0,0,0.7)] animate-fadeinup">
-      <form id="forma" name="forma" class="space-y-8">
-        <section>
-          <div class="flex items-center gap-2 text-gold-light text-lg font-semibold mb-4">
-            <span class="text-gold text-xs">◆</span> 基本信息
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div class="relative">
-              <label class="block text-sm text-gold-light/80 mb-2">长度</label>
-              <input class="w-full rounded-xl border border-gold/30 bg-black/60 px-4 py-3 text-base outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="请输入长度" id="mwidth" name="mwidth" onkeyup="value=value.replace(/[^\d.]/g,'')" pattern="\d*">
-              <span class="pointer-events-none absolute right-4 top-[46px] text-sm text-gold/80">mm</span>
-            </div>
-            <div class="relative">
-              <label class="block text-sm text-gold-light/80 mb-2">宽度</label>
-              <input class="w-full rounded-xl border border-gold/30 bg-black/60 px-4 py-3 text-base outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="请输入宽度" id="mheight" name="mheight" onkeyup="value=value.replace(/[^\d.]/g,'')" pattern="\d*">
-              <span class="pointer-events-none absolute right-4 top-[46px] text-sm text-gold/80">mm</span>
-            </div>
-            <div>
-              <label class="block text-sm text-gold-light/80 mb-2">数量</label>
-              <input class="w-full rounded-xl border border-gold/30 bg-black/60 px-4 py-3 text-base outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="请输入数量" id="msize" name="msize" onkeyup="value=value.replace(/[^\d]/g,'')" pattern="\d*">
-            </div>
-          </div>
-        </section>
+      <form id="forma" name="forma">
 
-        <section>
-          <div class="flex items-center gap-2 text-gold-light text-lg font-semibold mb-4">
-            <span class="text-gold text-xs">◆</span> 材料选择
-          </div>
+        <!-- Row 1: 材料 -->
+        <div class="form-row row-top">
+          <div class="row-label">材料</div>
           <div>
-            <select class="w-full rounded-xl border border-gold/30 bg-black/60 px-4 py-3 text-base outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" name="Material" id="Material">
+            <div class="flex flex-wrap gap-2 mb-2">
+              <button type="button" class="tag-btn quick-mat rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80" data-text="纯加工">纯加工</button>
+              <button type="button" class="tag-btn quick-mat rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80" data-text="格底铜版热熔胶">铜版热熔</button>
+              <button type="button" class="tag-btn quick-mat rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80" data-text="铜版油胶">铜版油胶</button>
+              <button type="button" class="tag-btn quick-mat rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80" data-text="格底54#合成纸（水胶">合成纸水胶</button>
+              <button type="button" class="tag-btn quick-mat rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80" data-text="白底54#合成纸*03">白底合成纸</button>
+              <button type="button" class="tag-btn quick-mat rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80" data-text="格底50#光银BOPP*02">光银BOPP</button>
+              <button type="button" class="tag-btn quick-mat rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80" data-text="格底25#透明">透明涂层</button>
+              <button type="button" class="tag-btn quick-mat rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80" data-text="黄底25#哑银">哑银膜</button>
+              <button type="button" class="tag-btn quick-mat rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80" data-text="格底珠光膜">珠光膜</button>
+              <button type="button" class="tag-btn quick-mat rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80" data-text="格底牛皮纸">牛皮纸</button>
+              <button type="button" id="toggleMatCustom" class="tag-btn tag-toggle rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80">其他</button>
+            </div>
+            <div class="sel-wrap" id="selWrap" style="display:none">
+              <input type="text" id="selInput" autocomplete="off" placeholder="搜索材料..." class="w-full rounded-xl border border-gold/30 bg-black/60 px-4 py-3 text-base text-gold-light outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)] placeholder:text-gold/40">
+              <div class="sel-list" id="selList"></div>
+            </div>
+            <select name="Material" id="Material" style="display:none;">
               <option value="0">纯加工</option>
               <option value="9999">———— 铜版系列 ————</option>
               <option value="2.2">黄底龙标*0220</option>
@@ -200,73 +222,139 @@
               <option value="3.1">艾利 AW 5029*0310</option>
             </select>
           </div>
-        </section>
+        </div>
 
-        <section>
-          <div class="flex items-center gap-2 text-gold-light text-lg font-semibold mb-4">
-            <span class="text-gold text-xs">◆</span> 覆膜工艺
+        <!-- Row 2: 尺寸 -->
+        <div class="form-row row-top">
+          <div class="row-label">尺寸</div>
+          <div>
+            <div class="flex flex-wrap gap-2 mb-2">
+              <button type="button" class="tag-btn quick-size rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80" data-w="30" data-h="15">30×15</button>
+              <button type="button" class="tag-btn quick-size rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80" data-w="40" data-h="20">40×20</button>
+              <button type="button" class="tag-btn quick-size rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80" data-w="40" data-h="30">40×30</button>
+              <button type="button" class="tag-btn quick-size rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80" data-w="50" data-h="30">50×30</button>
+              <button type="button" class="tag-btn quick-size rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80" data-w="60" data-h="40">60×40</button>
+              <button type="button" class="tag-btn quick-size rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80" data-w="80" data-h="50">80×50</button>
+              <button type="button" class="tag-btn quick-size rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80" data-w="100" data-h="70">100×70</button>
+              <button type="button" id="toggleSizeCustom" class="tag-btn tag-toggle rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80">自定义</button>
+            </div>
+            <div id="customSizeRow" class="flex items-center gap-2" style="display:none">
+              <input class="flex-1 rounded-xl border border-gold/30 bg-black/60 px-4 py-2.5 text-sm outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="长" id="mwidth" name="mwidth" onkeyup="value=value.replace(/[^\d.]/g,'')" pattern="\d*">
+              <span class="text-gold/60 text-sm">×</span>
+              <input class="flex-1 rounded-xl border border-gold/30 bg-black/60 px-4 py-2.5 text-sm outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="宽" id="mheight" name="mheight" onkeyup="value=value.replace(/[^\d.]/g,'')" pattern="\d*">
+              <span class="text-gold/60 text-sm">mm</span>
+            </div>
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <label class="flex items-center gap-2 rounded-xl border border-gold/20 bg-gold/10 px-4 py-3 text-gold-light">
+        </div>
+
+        <!-- Row 3: 数量 -->
+        <div class="form-row row-top">
+          <div class="row-label">数量</div>
+          <div>
+            <div class="flex flex-wrap gap-2 mb-2">
+              <button type="button" class="tag-btn quick-qty rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80" data-qty="1000">1,000</button>
+              <button type="button" class="tag-btn quick-qty rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80" data-qty="2000">2,000</button>
+              <button type="button" class="tag-btn quick-qty rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80" data-qty="3000">3,000</button>
+              <button type="button" class="tag-btn quick-qty rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80" data-qty="5000">5,000</button>
+              <button type="button" class="tag-btn quick-qty rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80" data-qty="10000">10,000</button>
+              <button type="button" class="tag-btn quick-qty rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80" data-qty="20000">20,000</button>
+              <button type="button" class="tag-btn quick-qty rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80" data-qty="50000">50,000</button>
+              <button type="button" id="toggleQtyCustom" class="tag-btn tag-toggle rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80">自定义</button>
+            </div>
+            <div id="customQtyRow" class="flex items-center gap-2" style="display:none">
+              <input class="flex-1 rounded-xl border border-gold/30 bg-black/60 px-4 py-2.5 text-sm outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="输入数量" id="msize" name="msize" onkeyup="value=value.replace(/[^\d]/g,'')" pattern="\d*">
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 4: 覆膜 -->
+        <div class="form-row">
+          <div class="row-label">覆膜</div>
+          <div class="flex flex-wrap gap-3 items-center">
+            <label class="flex items-center gap-2 rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light cursor-pointer">
               <input type="radio" value="0.8" name="YsTyp" id="ys1" checked class="h-4 w-4 accent-gold">
               光膜
             </label>
-            <label class="flex items-center gap-2 rounded-xl border border-gold/20 bg-gold/10 px-4 py-3 text-gold-light">
+            <label class="flex items-center gap-2 rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light cursor-pointer">
               <input type="radio" value="1" name="YsTyp" id="ys2" class="h-4 w-4 accent-gold">
               亚胶
             </label>
-            <label class="flex items-center gap-2 rounded-xl border border-gold/20 bg-gold/10 px-4 py-3 text-gold-light">
+            <label class="flex items-center gap-2 rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light cursor-pointer">
               <input type="radio" value="0" name="YsTyp" id="ys3" class="h-4 w-4 accent-gold">
               不覆膜
             </label>
           </div>
-        </section>
+        </div>
 
-        <section>
-          <div class="flex items-center gap-2 text-gold-light text-lg font-semibold mb-4">
-            <span class="text-gold text-xs">◆</span> 附加工艺
-          </div>
-          <div class="space-y-3">
-            <div class="grid grid-cols-[22px_1fr] items-center gap-3 rounded-xl border border-gold/20 bg-gold/10 px-4 py-3">
-              <input type="checkbox" value="1.5" name="TjData" id="TjData" class="h-5 w-5 accent-gold">
-              <label for="TjData" class="text-gold-light">烫金</label>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pl-8 tj" style="display: none;">
-              <input class="w-full rounded-lg border border-gold/30 bg-black/60 px-3 py-2 text-base outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="长(mm)" onkeyup="value=value.replace(/[^\d.]/g,'')" id="twidth" name="twidth" pattern="\d*">
-              <input class="w-full rounded-lg border border-gold/30 bg-black/60 px-3 py-2 text-base outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="宽(mm)" onkeyup="value=value.replace(/[^\d.]/g,'')" id="theight" name="theight" pattern="\d*">
-              <input class="w-full rounded-lg border border-gold/30 bg-black/60 px-3 py-2 text-base outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="数量" onkeyup="value=value.replace(/[^\d]/g,'')" id="tsize" name="tsize" pattern="\d*">
-            </div>
-
-            <div class="grid grid-cols-[22px_1fr] items-center gap-3 rounded-xl border border-gold/20 bg-gold/10 px-4 py-3">
-              <input type="checkbox" value="0.5" name="ZsData" id="ZsData" class="h-5 w-5 accent-gold">
-              <label for="ZsData" class="text-gold-light">白墨</label>
-            </div>
-
-            <div class="grid grid-cols-[22px_90px_1fr] sm:grid-cols-[22px_110px_minmax(160px,1fr)] items-center gap-3 rounded-xl border border-gold/20 bg-gold/10 px-4 py-3">
-              <input type="checkbox" value="0.5" name="KsData" id="KsData" class="h-5 w-5 accent-gold">
-              <label for="KsData" class="text-gold-light">专色</label>
-              <input class="w-full rounded-lg border border-gold/30 bg-black/60 px-3 py-2 text-base outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="数量" onkeyup="value=value.replace(/[^\d]/g,'')" pattern="\d*" id="Kssize" name="Kssize" style="display: none;">
-            </div>
-
-            <div class="grid grid-cols-[22px_90px_1fr] sm:grid-cols-[22px_110px_minmax(160px,1fr)] items-center gap-3 rounded-xl border border-gold/20 bg-gold/10 px-4 py-3">
-              <input type="checkbox" value="0.5" name="JbData" id="JbData" class="h-5 w-5 accent-gold">
-              <label for="JbData" class="text-gold-light">卷标费</label>
-              <input class="w-full rounded-lg border border-gold/30 bg-black/60 px-3 py-2 text-base outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="数量" onkeyup="value=value.replace(/[^\d]/g,'')" pattern="\d*" id="Jbsize" name="Jbsize" style="display: none;">
-            </div>
-
-            <div class="grid grid-cols-[22px_1fr] items-center gap-3 rounded-xl border border-gold/20 bg-gold/10 px-4 py-3">
-              <input type="checkbox" value="1" name="CkData" id="GyData" class="h-5 w-5 accent-gold">
-              <label for="GyData" class="text-gold-light">过油</label>
-            </div>
-
-            <div class="grid grid-cols-[22px_1fr] items-center gap-3 rounded-xl border border-gold/20 bg-gold/10 px-4 py-3">
-              <input type="checkbox" value="1" name="CkData" id="MsData" class="h-5 w-5 accent-gold">
-              <label for="MsData" class="text-gold-light">磨砂</label>
+        <!-- Row 5: 烫金 -->
+        <div class="form-row">
+          <div class="row-label">烫金</div>
+          <div class="flex items-center gap-3">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" value="1.5" name="TjData" id="TjData" class="h-4 w-4 accent-gold">
+            </label>
+            <div class="tj flex items-center gap-2" style="display:none;">
+              <input class="w-24 rounded-xl border border-gold/30 bg-black/60 px-3 py-2 text-sm outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="长(mm)" onkeyup="value=value.replace(/[^\d.]/g,'')" id="twidth" name="twidth" pattern="\d*">
+              <span class="text-gold/60 text-xs">×</span>
+              <input class="w-24 rounded-xl border border-gold/30 bg-black/60 px-3 py-2 text-sm outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="宽(mm)" onkeyup="value=value.replace(/[^\d.]/g,'')" id="theight" name="theight" pattern="\d*">
+              <input class="w-20 rounded-xl border border-gold/30 bg-black/60 px-3 py-2 text-sm outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="数量" onkeyup="value=value.replace(/[^\d]/g,'')" id="tsize" name="tsize" pattern="\d*">
             </div>
           </div>
-        </section>
+        </div>
 
-        <input type="radio" value="1.4" name="Printing" id="Printing" checked style="display: none;">
+        <!-- Row 6: 白墨 -->
+        <div class="form-row">
+          <div class="row-label">白墨</div>
+          <div class="flex items-center">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" value="0.5" name="ZsData" id="ZsData" class="h-4 w-4 accent-gold">
+            </label>
+          </div>
+        </div>
+
+        <!-- Row 7: 专色 -->
+        <div class="form-row">
+          <div class="row-label">专色</div>
+          <div class="flex items-center gap-3">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" value="0.5" name="KsData" id="KsData" class="h-4 w-4 accent-gold">
+            </label>
+            <input class="w-24 rounded-xl border border-gold/30 bg-black/60 px-3 py-2 text-sm outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="数量" onkeyup="value=value.replace(/[^\d]/g,'')" pattern="\d*" id="Kssize" name="Kssize" style="display:none;">
+          </div>
+        </div>
+
+        <!-- Row 8: 卷标 -->
+        <div class="form-row">
+          <div class="row-label">卷标</div>
+          <div class="flex items-center gap-3">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" value="0.5" name="JbData" id="JbData" class="h-4 w-4 accent-gold">
+            </label>
+            <input class="w-24 rounded-xl border border-gold/30 bg-black/60 px-3 py-2 text-sm outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="数量" onkeyup="value=value.replace(/[^\d]/g,'')" pattern="\d*" id="Jbsize" name="Jbsize" style="display:none;">
+          </div>
+        </div>
+
+        <!-- Row 9: 过油 -->
+        <div class="form-row">
+          <div class="row-label">过油</div>
+          <div class="flex items-center">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" value="1" name="CkData" id="GyData" class="h-4 w-4 accent-gold">
+            </label>
+          </div>
+        </div>
+
+        <!-- Row 10: 磨砂 -->
+        <div class="form-row">
+          <div class="row-label">磨砂</div>
+          <div class="flex items-center">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" value="1" name="CkData" id="MsData" class="h-4 w-4 accent-gold">
+            </label>
+          </div>
+        </div>
+
+        <input type="radio" value="1.4" name="Printing" id="Printing" checked style="display:none;">
       </form>
 
       <section class="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-6 rounded-2xl border border-gold/30 bg-gradient-to-r from-gold/15 to-gold/5 px-6 py-8 text-center">
@@ -299,6 +387,15 @@
       $("#TjData").click(function(){
         $(".tj").toggle();
       });
+      $("#toggleMatCustom").click(function(){
+        $("#selWrap").toggle();
+      });
+      $("#toggleSizeCustom").click(function(){
+        $("#customSizeRow").toggle();
+      });
+      $("#toggleQtyCustom").click(function(){
+        $("#customQtyRow").toggle();
+      });
     });
     $(document).ready(function(){
       $("#Kssize").hide();
@@ -312,6 +409,124 @@
         $("#Jbsize").toggle();
       });
     });
+  </script>
+  <script>
+  (function(){
+    var forma = document.getElementById('forma');
+    var matSel = document.getElementById('Material');
+    var selInput = document.getElementById('selInput');
+    var selList = document.getElementById('selList');
+    var selWrap = document.getElementById('selWrap');
+    function fire(){ forma.dispatchEvent(new Event('input',{bubbles:true})); }
+
+    // ── 常用尺寸 ──
+    document.querySelectorAll('.quick-size').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        document.querySelectorAll('.quick-size').forEach(function(b){b.classList.remove('active')});
+        btn.classList.add('active');
+        document.getElementById('mwidth').value = btn.dataset.w;
+        document.getElementById('mheight').value = btn.dataset.h;
+        fire();
+      });
+    });
+
+    // ── 常用数量 ──
+    document.querySelectorAll('.quick-qty').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        document.querySelectorAll('.quick-qty').forEach(function(b){b.classList.remove('active')});
+        btn.classList.add('active');
+        document.getElementById('msize').value = btn.dataset.qty;
+        fire();
+      });
+    });
+
+    // ── 常用材料 ──
+    document.querySelectorAll('.quick-mat').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        document.querySelectorAll('.quick-mat').forEach(function(b){b.classList.remove('active')});
+        btn.classList.add('active');
+        var txt = btn.dataset.text;
+        for(var i=0;i<matSel.options.length;i++){
+          if(matSel.options[i].text.indexOf(txt)!==-1 && matSel.options[i].value!=='9999'){
+            matSel.selectedIndex = i;
+            selInput.value = matSel.options[i].text;
+            updateDropdownActive(i);
+            break;
+          }
+        }
+        fire();
+      });
+    });
+
+    // ── 搜索下拉框 ──
+    function buildList(){
+      while(selList.firstChild) selList.removeChild(selList.firstChild);
+      for(var i=0;i<matSel.options.length;i++){
+        var opt=matSel.options[i], div=document.createElement('div');
+        if(opt.value==='9999'){
+          div.className='sel-item hd';
+          div.textContent=opt.text;
+        }else{
+          div.className='sel-item';
+          div.textContent=opt.text;
+          div.dataset.idx=i;
+          if(i===matSel.selectedIndex) div.classList.add('on');
+          (function(idx,text){
+            div.addEventListener('click',function(){
+              matSel.selectedIndex=idx;
+              selInput.value=text;
+              selList.classList.remove('open');
+              updateDropdownActive(idx);
+              document.querySelectorAll('.quick-mat').forEach(function(b){b.classList.remove('active')});
+              fire();
+            });
+          })(i,opt.text);
+        }
+        selList.appendChild(div);
+      }
+    }
+
+    function updateDropdownActive(idx){
+      selList.querySelectorAll('.sel-item:not(.hd)').forEach(function(el){
+        el.classList.toggle('on', el.dataset.idx==idx);
+      });
+    }
+
+    buildList();
+
+    selInput.addEventListener('input',function(){
+      var q=this.value.toLowerCase();
+      selList.classList.add('open');
+      selList.querySelectorAll('.sel-item').forEach(function(el){
+        if(el.classList.contains('hd')){
+          el.classList.toggle('hide',q.length>0);
+        }else{
+          el.classList.toggle('hide',q.length>0 && el.textContent.toLowerCase().indexOf(q)===-1);
+        }
+      });
+    });
+
+    selInput.addEventListener('focus',function(){ selList.classList.add('open'); });
+    document.addEventListener('click',function(e){
+      if(!selWrap.contains(e.target)) selList.classList.remove('open');
+    });
+
+    // ── 手动输入时同步高亮 ──
+    document.getElementById('mwidth').addEventListener('input',function(){ clearSizeActive(); });
+    document.getElementById('mheight').addEventListener('input',function(){ clearSizeActive(); });
+    document.getElementById('msize').addEventListener('input',function(){
+      var v=this.value;
+      document.querySelectorAll('.quick-qty').forEach(function(b){
+        b.classList.toggle('active',b.dataset.qty===v);
+      });
+    });
+    function clearSizeActive(){
+      var w=document.getElementById('mwidth').value, h=document.getElementById('mheight').value;
+      document.querySelectorAll('.quick-size').forEach(function(b){
+        b.classList.toggle('active',b.dataset.w===w && b.dataset.h===h);
+      });
+    }
+  })();
   </script>
 </body>
 </html>
