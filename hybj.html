@@ -74,6 +74,7 @@
     .form-row { display: grid; grid-template-columns: 70px 1fr; gap: 0 16px; align-items: center; padding: 14px 0; border-bottom: 1px solid rgba(212,175,55,0.1); }
     .form-row:last-of-type { border-bottom: none; }
     .form-row.row-top { align-items: start; }
+    .form-row.row-top > :nth-child(2) { overflow: hidden; }
     .row-label { color: #d4af37; font-size: 14px; font-weight: 600; white-space: nowrap; }
     @media (max-width: 640px) {
       .form-row { grid-template-columns: 1fr; gap: 6px 0; }
@@ -239,9 +240,9 @@
               <button type="button" id="toggleSizeCustom" class="tag-btn tag-toggle rounded-xl border border-gold/20 bg-gold/10 px-3.5 py-2 text-sm text-gold-light/80">自定义</button>
             </div>
             <div id="customSizeRow" class="flex items-center gap-2" style="display:none">
-              <input class="flex-1 rounded-xl border border-gold/30 bg-black/60 px-4 py-2.5 text-sm outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="长" id="mwidth" name="mwidth" onkeyup="value=value.replace(/[^\d.]/g,'')" pattern="\d*">
+              <input class="flex-1 min-w-0 rounded-xl border border-gold/30 bg-black/60 px-4 py-2.5 text-sm outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="长" id="mwidth" name="mwidth" onkeyup="value=value.replace(/[^\d.]/g,'')" inputmode="decimal">
               <span class="text-gold/60 text-sm">×</span>
-              <input class="flex-1 rounded-xl border border-gold/30 bg-black/60 px-4 py-2.5 text-sm outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="宽" id="mheight" name="mheight" onkeyup="value=value.replace(/[^\d.]/g,'')" pattern="\d*">
+              <input class="flex-1 min-w-0 rounded-xl border border-gold/30 bg-black/60 px-4 py-2.5 text-sm outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="宽" id="mheight" name="mheight" onkeyup="value=value.replace(/[^\d.]/g,'')" inputmode="decimal">
               <span class="text-gold/60 text-sm">mm</span>
             </div>
           </div>
@@ -294,9 +295,9 @@
               <input type="checkbox" value="1.5" name="TjData" id="TjData" class="h-4 w-4 accent-gold">
             </label>
             <div class="tj flex items-center gap-2" style="display:none;">
-              <input class="w-24 rounded-xl border border-gold/30 bg-black/60 px-3 py-2 text-sm outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="长(mm)" onkeyup="value=value.replace(/[^\d.]/g,'')" id="twidth" name="twidth" pattern="\d*">
+              <input class="w-24 rounded-xl border border-gold/30 bg-black/60 px-3 py-2 text-sm outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="长(mm)" onkeyup="value=value.replace(/[^\d.]/g,'')" id="twidth" name="twidth" inputmode="decimal">
               <span class="text-gold/60 text-xs">×</span>
-              <input class="w-24 rounded-xl border border-gold/30 bg-black/60 px-3 py-2 text-sm outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="宽(mm)" onkeyup="value=value.replace(/[^\d.]/g,'')" id="theight" name="theight" pattern="\d*">
+              <input class="w-24 rounded-xl border border-gold/30 bg-black/60 px-3 py-2 text-sm outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="宽(mm)" onkeyup="value=value.replace(/[^\d.]/g,'')" id="theight" name="theight" inputmode="decimal">
               <input class="w-20 rounded-xl border border-gold/30 bg-black/60 px-3 py-2 text-sm outline-none focus:border-gold focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]" type="text" placeholder="数量" onkeyup="value=value.replace(/[^\d]/g,'')" id="tsize" name="tsize" pattern="\d*">
             </div>
           </div>
