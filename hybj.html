@@ -74,7 +74,7 @@
     .form-row { display: grid; grid-template-columns: 70px 1fr; gap: 0 16px; align-items: center; padding: 14px 0; border-bottom: 1px solid rgba(212,175,55,0.1); }
     .form-row:last-of-type { border-bottom: none; }
     .form-row.row-top { align-items: start; }
-    .form-row.row-top > :nth-child(2) { overflow: hidden; }
+    .form-row.row-top > :nth-child(2) { overflow: visible; }
     .row-label { color: #d4af37; font-size: 14px; font-weight: 600; white-space: nowrap; }
     @media (max-width: 640px) {
       .form-row { grid-template-columns: 1fr; gap: 6px 0; }
@@ -390,6 +390,9 @@
       });
       $("#toggleMatCustom").click(function(){
         $("#selWrap").toggle();
+        if ($("#selWrap").is(":visible")) {
+          $("#selInput").trigger("focus");
+        }
       });
       $("#toggleSizeCustom").click(function(){
         $("#customSizeRow").toggle();
@@ -419,6 +422,37 @@
     var selList = document.getElementById('selList');
     var selWrap = document.getElementById('selWrap');
     function fire(){ forma.dispatchEvent(new Event('input',{bubbles:true})); }
+    function normalizeMaterialText(text){
+      return String(text || '')
+        .toLowerCase()
+        .replace(/[\s#*（）()\/-]+/g,'');
+    }
+    function getVisibleMaterialItems(){
+      return Array.prototype.filter.call(
+        selList.querySelectorAll('.sel-item:not(.hd)'),
+        function(el){ return !el.classList.contains('hide'); }
+      );
+    }
+    function selectMaterial(idx, options){
+      var opts = options || {};
+      if (!matSel.options[idx] || matSel.options[idx].value === '9999') return;
+      matSel.selectedIndex = idx;
+      selInput.value = matSel.options[idx].text;
+      updateDropdownActive(idx);
+      if (opts.closeList !== false) {
+        selList.classList.remove('open');
+      }
+      if (opts.clearQuickMat !== false) {
+        document.querySelectorAll('.quick-mat').forEach(function(b){b.classList.remove('active')});
+      }
+      fire();
+    }
+    function syncQuickMaterialState(){
+      var selectedText = matSel.options[matSel.selectedIndex] ? matSel.options[matSel.selectedIndex].text : '';
+      document.querySelectorAll('.quick-mat').forEach(function(btn){
+        btn.classList.toggle('active', selectedText.indexOf(btn.dataset.text) !== -1);
+      });
+    }
 
     // ── 常用尺寸 ──
     document.querySelectorAll('.quick-size').forEach(function(btn){
@@ -444,18 +478,14 @@
     // ── 常用材料 ──
     document.querySelectorAll('.quick-mat').forEach(function(btn){
       btn.addEventListener('click',function(){
-        document.querySelectorAll('.quick-mat').forEach(function(b){b.classList.remove('active')});
-        btn.classList.add('active');
         var txt = btn.dataset.text;
         for(var i=0;i<matSel.options.length;i++){
           if(matSel.options[i].text.indexOf(txt)!==-1 && matSel.options[i].value!=='9999'){
-            matSel.selectedIndex = i;
-            selInput.value = matSel.options[i].text;
-            updateDropdownActive(i);
+            selectMaterial(i, { clearQuickMat: false });
+            syncQuickMaterialState();
             break;
           }
         }
-        fire();
       });
     });
 
@@ -474,12 +504,8 @@
           if(i===matSel.selectedIndex) div.classList.add('on');
           (function(idx,text){
             div.addEventListener('click',function(){
-              matSel.selectedIndex=idx;
-              selInput.value=text;
-              selList.classList.remove('open');
-              updateDropdownActive(idx);
-              document.querySelectorAll('.quick-mat').forEach(function(b){b.classList.remove('active')});
-              fire();
+              selectMaterial(idx);
+              syncQuickMaterialState();
             });
           })(i,opt.text);
         }
@@ -494,20 +520,29 @@
     }
 
     buildList();
+    syncQuickMaterialState();
 
     selInput.addEventListener('input',function(){
-      var q=this.value.toLowerCase();
+      var q=normalizeMaterialText(this.value);
       selList.classList.add('open');
       selList.querySelectorAll('.sel-item').forEach(function(el){
         if(el.classList.contains('hd')){
           el.classList.toggle('hide',q.length>0);
         }else{
-          el.classList.toggle('hide',q.length>0 && el.textContent.toLowerCase().indexOf(q)===-1);
+          el.classList.toggle('hide',q.length>0 && normalizeMaterialText(el.textContent).indexOf(q)===-1);
         }
       });
     });
 
     selInput.addEventListener('focus',function(){ selList.classList.add('open'); });
+    selInput.addEventListener('keydown',function(e){
+      if(e.key !== 'Enter') return;
+      var visibleItems = getVisibleMaterialItems();
+      if(!visibleItems.length) return;
+      e.preventDefault();
+      selectMaterial(parseInt(visibleItems[0].dataset.idx, 10));
+      syncQuickMaterialState();
+    });
     document.addEventListener('click',function(e){
       if(!selWrap.contains(e.target)) selList.classList.remove('open');
     });
